@@ -1,0 +1,11 @@
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Debug\netcoreapp2.1\GrooveCoasterController.deps.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Debug\netcoreapp2.1\GrooveCoasterController.runtimeconfig.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Debug\netcoreapp2.1\GrooveCoasterController.runtimeconfig.dev.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Debug\netcoreapp2.1\GrooveCoasterController.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Debug\netcoreapp2.1\GrooveCoasterController.pdb
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.csprojAssemblyReference.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.csproj.CoreCompileInputs.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.AssemblyInfoInputs.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.AssemblyInfo.cs
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Debug\netcoreapp2.1\GrooveCoasterController.pdb
