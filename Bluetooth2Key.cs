@@ -9,13 +9,13 @@ namespace GrooveCoasterController
 {
     class Bluetooth2Key
     {
-        private InputSimulator IS { get; }
+        private InputSimulator InputSimulator { get; }
         private BluetoothListener Listener { get; }
         readonly Guid OurServiceClassId = new Guid("0abfa6c2-384c-4844-8e9d-7fcc862b3a7d");
 
         public Bluetooth2Key()
         {
-            IS = new InputSimulator();
+            InputSimulator = new InputSimulator();
             try
             {
                 Listener = new BluetoothListener(OurServiceClassId);
@@ -43,10 +43,7 @@ namespace GrooveCoasterController
             Console.WriteLine($"Connected from : {client.RemoteEndPoint.Address} {client.RemoteMachineName}");
             var peer = client.GetStream();
             Console.WriteLine("Reading...");
-            while(true)
-            {
-                ReadMessagesToEnd(peer);
-            }
+            ReadMessagesToEnd(peer);
         }
 
         private void ReadMessagesToEnd(Stream peer)
@@ -58,14 +55,22 @@ namespace GrooveCoasterController
                 try
                 {
                     r = rdr.Read(); //Blocking call
-                    IS.Keyboard.KeyDown(VirtualKeyCode.VK_A);
-                    IS.Keyboard.KeyUp(VirtualKeyCode.VK_A);
                 }
                 catch (IOException ioex)
                 {
                     Console.WriteLine("Connection closed hard! (read)");
                     Console.WriteLine(ioex);
                     break;
+                }
+                if (r == -1)
+                {
+                    Console.WriteLine("Connection closed ! (-1 read)");
+                    break;
+                }
+                else
+                {
+                    InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_S);
+                    InputSimulator.Keyboard.KeyUp(VirtualKeyCode.VK_S);
                 }
                 Console.WriteLine($"Message : {r}");
             }

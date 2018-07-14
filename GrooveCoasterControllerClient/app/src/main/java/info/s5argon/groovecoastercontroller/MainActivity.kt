@@ -1,22 +1,16 @@
 package info.s5argon.groovecoastercontroller
 
 import android.bluetooth.*
-import android.drm.DrmStore
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.MotionEvent
 import android.view.View
-import android.bluetooth.le.ScanCallback
 import android.content.Context
-import android.view.Window
-import android.view.WindowManager
 import android.content.Intent
-import android.bluetooth.le.ScanResult
+import android.graphics.Point
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -26,9 +20,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private var bluetoothAdapter : BluetoothAdapter? = null
-    private var gatt : BluetoothGatt? = null
     private var firstBonded : BluetoothDevice? = null
     private var socket : BluetoothSocket? = null
+    private var pointTracker : GroovePointTracker? = null
 
     private fun getBluetooth() {
         println("Getting Bluetooth")
@@ -45,53 +39,48 @@ class MainActivity : AppCompatActivity() {
         println("Connected name ${firstBonded?.name}, getting RFCOMM")
         socket = firstBonded?.createRfcommSocketToServiceRecord(UUID.fromString("0abfa6c2-384c-4844-8e9d-7fcc862b3a7d"))
         socket?.connect()
+        pointTracker = GroovePointTracker()
         println("Connected! Probably!")
-        //gatt = firstBonded?.connectGatt(this,true,MyGattCallback())
-        //Postmortem : Bluetooth LE scanning require location service?? Too many damn callbacks??
     }
-
-    class MyCallback(contextReceive : Context ) : ScanCallback()
-    {
-        val context = contextReceive
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            println("Scan result")
-            result?.device?.connectGatt(context,true, MyGattCallback())
-            super.onScanResult(callbackType, result)
-        }
-        override fun onBatchScanResults(results: MutableList<ScanResult>?) {
-            println("Batch Scan Result")
-            super.onBatchScanResults(results)
-        }
-        override fun onScanFailed(errorCode: Int) {
-            println("Scan failed!")
-            super.onScanFailed(errorCode)
-        }
-    }
-
-    class MyGattCallback : BluetoothGattCallback()
-    {
-        override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
-            println("Service discovered $status ${gatt?.device?.name}")
-            super.onServicesDiscovered(gatt, status)
-        }
-
-        override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
-            println("Connection state change from $status to $newState")
-            super.onConnectionStateChange(gatt, status, newState)
-        }
-    }
-
-
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        //println("Touched! ${event}")
-        if(event?.action == MotionEvent.ACTION_DOWN) {
-            println("Firing Bluetooth event")
-            socket?.outputStream?.write(3)
-            //val service = gatt?.getService(UUID.fromString("0abfa6c2-384c-4844-8e9d-7fcc862b3a7d"))
-            //println(service)
-        }
+        val size = Point()
+        windowManager.defaultDisplay.getSize(size)
+        pointTracker?.AddMotionEvent(event,socket, size.y)
         return super.onTouchEvent(event)
+    }
+
+    private class GroovePointTracker()
+    {
+        object GrooveKey {
+            const val LDown = 0
+            const val LUp = 1
+            const val LSlideLeft = 2
+            const val LSlideDown= 3
+            const val LSlideUp = 4
+            const val LSlideRight= 5
+
+            const val RDown = 6
+            const val RUp = 7
+            const val RSlideLeft = 8
+            const val RSlideDown= 9
+            const val RSlideUp = 10
+            const val RSlideRight= 11
+        }
+
+        fun AddMotionEvent(event : MotionEvent?, socket: BluetoothSocket?, screenWidth : Int)
+        {
+            val pointerCount = event?.pointerCount ?: 0
+            for(e in 0..(pointerCount-1))
+            {
+                val pointerId = event?.getPointerId(e)
+                val x = event?.getX(e)
+                val y = event?.getY(e)
+                println("Each pointer $x $y $pointerId")
+            }
+            println("$screenWidth Action ${event?.action} ${event?.actionMasked} Pointer Count ${event?.pointerCount}")
+            socket?.outputStream?.write(3)
+        }
     }
 
     private fun hideClutters(){
