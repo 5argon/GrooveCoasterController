@@ -11,7 +11,7 @@ namespace GrooveCoasterController
     {
         private InputSimulator IS { get; }
         private BluetoothListener Listener { get; }
-        readonly Guid OurServiceClassId = new Guid("{0abfa6c2-384c-4844-8e9d-7fcc862b3a7d}");
+        readonly Guid OurServiceClassId = new Guid("0abfa6c2-384c-4844-8e9d-7fcc862b3a7d");
 
         public Bluetooth2Key()
         {
@@ -32,17 +32,19 @@ namespace GrooveCoasterController
         {
             Listener.ServiceName = "Groove Coaster Controller";
             Listener.Start();
-            Task.Run(() => ListenerAsync(Listener));
             Console.WriteLine("Starting Bluetooth listener!");
+            Task.Run(() => ListenerAsync(Listener));
         }
 
-        private Task ListenerAsync(BluetoothListener listener)
+        private void ListenerAsync(BluetoothListener listener)
         {
-            while (true)
+            Console.WriteLine($"Waiting for connection...");
+            BluetoothClient client = listener.AcceptBluetoothClient();
+            Console.WriteLine($"Connected from : {client.RemoteEndPoint.Address} {client.RemoteMachineName}");
+            var peer = client.GetStream();
+            Console.WriteLine("Reading...");
+            while(true)
             {
-                var conn = listener.AcceptBluetoothClient();
-                var peer = conn.GetStream();
-                Console.WriteLine($"Connected from : {conn.RemoteEndPoint.Address} {conn.RemoteMachineName}");
                 ReadMessagesToEnd(peer);
             }
         }
@@ -52,10 +54,12 @@ namespace GrooveCoasterController
             var rdr = new StreamReader(peer);
             while (true)
             {
-                string line;
+                int r;
                 try
                 {
-                    line = rdr.ReadLine();
+                    r = rdr.Read(); //Blocking call
+                    IS.Keyboard.KeyDown(VirtualKeyCode.VK_A);
+                    IS.Keyboard.KeyUp(VirtualKeyCode.VK_A);
                 }
                 catch (IOException ioex)
                 {
@@ -63,12 +67,7 @@ namespace GrooveCoasterController
                     Console.WriteLine(ioex);
                     break;
                 }
-                if (line == null)
-                {
-                    Console.WriteLine("Connection closed (read)");
-                    break;
-                }
-                Console.WriteLine($"Message : {line}");
+                Console.WriteLine($"Message : {r}");
             }
             ConnectionCleanup();
         }
@@ -76,18 +75,6 @@ namespace GrooveCoasterController
         private void ConnectionCleanup()
         {
             Console.WriteLine($"Cleaning up connection");
-        }
-
-        static int counter = 0;
-        public async Task IntervalPress()
-        {
-            while (true)
-            {
-                IS.Keyboard.KeyDown(VirtualKeyCode.VK_A);
-                IS.Keyboard.KeyUp(VirtualKeyCode.VK_A);
-                Console.WriteLine("Pressed! " + ++counter);
-                await Task.Delay(500);
-            }
         }
 
         public async Task WaitForever()
