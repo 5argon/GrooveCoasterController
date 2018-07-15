@@ -69,8 +69,18 @@ namespace GrooveCoasterController
                 }
                 else
                 {
-                    InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_S);
-                    InputSimulator.Keyboard.KeyUp(VirtualKeyCode.VK_S);
+                    switch (r)
+                    {
+                        case 3:
+                            InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_5);
+                            InputSimulator.Keyboard.KeyUp(VirtualKeyCode.VK_5);
+                            break;
+                        case 5:
+                            InputSimulator.Keyboard.KeyDown(VirtualKeyCode.RETURN);
+                            InputSimulator.Keyboard.KeyUp(VirtualKeyCode.RETURN);
+                            break;
+                    }
+
                 }
                 Console.WriteLine($"Message : {r}");
             }

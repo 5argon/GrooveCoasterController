@@ -8,7 +8,11 @@ import android.view.View
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.hardware.Sensor
 import java.util.*
+import android.hardware.SensorManager
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?)
@@ -17,6 +21,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         hideClutters()
         getBluetooth()
+
+        mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        mSensorManager?.registerListener(mSensorListener, mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+        mAccel = 0.00f
+        mAccelCurrent = SensorManager.GRAVITY_EARTH
+        mAccelLast = SensorManager.GRAVITY_EARTH
     }
 
     private var bluetoothAdapter : BluetoothAdapter? = null
@@ -46,11 +56,11 @@ class MainActivity : AppCompatActivity() {
     override fun onTouchEvent(event: MotionEvent?): Boolean {
         val size = Point()
         windowManager.defaultDisplay.getSize(size)
-        pointTracker?.AddMotionEvent(event,socket, size.y)
+        pointTracker?.addMotionEvent(event,socket, size.y)
         return super.onTouchEvent(event)
     }
 
-    private class GroovePointTracker()
+    private class GroovePointTracker
     {
         object GrooveKey {
             const val LDown = 0
@@ -68,7 +78,7 @@ class MainActivity : AppCompatActivity() {
             const val RSlideRight= 11
         }
 
-        fun AddMotionEvent(event : MotionEvent?, socket: BluetoothSocket?, screenWidth : Int)
+        fun addMotionEvent(event : MotionEvent?, socket: BluetoothSocket?, screenWidth : Int)
         {
             val pointerCount = event?.pointerCount ?: 0
             for(e in 0..(pointerCount-1))
@@ -88,5 +98,41 @@ class MainActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_FULLSCREEN or
                 View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+    }
+
+    private var mSensorManager: SensorManager? = null
+    private var mAccel: Float = 0.toFloat()
+    private var mAccelCurrent: Float = 0.toFloat()
+    private var mAccelLast: Float = 0.toFloat()
+
+    private val mSensorListener = object : SensorEventListener {
+        override fun onSensorChanged(se: SensorEvent) {
+            val x = se.values[0]
+            val y = se.values[1]
+            val z = se.values[2]
+            mAccelLast = mAccelCurrent
+            mAccelCurrent = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
+            val delta = mAccelCurrent - mAccelLast
+            mAccel = (mAccel percentage 90) + delta // perform low-cut filter
+            if(mAccel > 20)
+            {
+                socket?.outputStream?.write(5)
+            }
+        }
+
+        override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
+
+        infix fun Float.percentage (percentInteger : Int) : Float = this * (percentInteger / 100f)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mSensorManager!!.registerListener(mSensorListener, mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
+    }
+
+    override fun onPause() {
+        mSensorManager!!.unregisterListener(mSensorListener)
+        super.onPause()
     }
 }
