@@ -1,4 +1,4 @@
-package info.s5argon.droid2key
+package info.s5argon.groovecoastercontroller
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4

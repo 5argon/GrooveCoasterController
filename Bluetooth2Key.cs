@@ -71,6 +71,7 @@ namespace GrooveCoasterController
                 {
                     switch (r)
                     {
+                        /* 
                         case 3:
                             InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_S);
                             break;
@@ -81,6 +82,7 @@ namespace GrooveCoasterController
                             InputSimulator.Keyboard.KeyDown(VirtualKeyCode.RETURN);
                             InputSimulator.Keyboard.KeyUp(VirtualKeyCode.RETURN);
                             break;
+                            */
                     }
 
                 }
