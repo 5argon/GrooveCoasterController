@@ -1,4 +1,4 @@
-package info.s5argon.groovecoastercontroller
+package info.s5argon.droid2key
 
 import android.support.test.InstrumentationRegistry
 import android.support.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("info.s5argon.groovecoastercontroller", appContext.packageName)
+        assertEquals("info.s5argon.droid2key", appContext.packageName)
     }
 }

@@ -11,7 +11,6 @@ namespace GrooveCoasterController
             Console.WriteLine("Starting!");
             var b2k = new Bluetooth2Key();
             await b2k.WaitForever();
-            // await b2k.IntervalPress();
         }
     }
 }

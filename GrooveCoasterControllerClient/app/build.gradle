@@ -7,7 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "info.s5argon.groovecoastercontroller"
+        applicationId 'info.s5argon.droid2key'
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1

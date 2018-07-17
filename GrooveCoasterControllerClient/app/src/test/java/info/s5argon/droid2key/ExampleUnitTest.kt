@@ -1,4 +1,4 @@
-package info.s5argon.groovecoastercontroller
+package info.s5argon.droid2key
 
 import org.junit.Test
 

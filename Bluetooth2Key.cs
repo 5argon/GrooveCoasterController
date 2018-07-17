@@ -30,7 +30,7 @@ namespace GrooveCoasterController
 
         private void StartBluetoothRFCOMM()
         {
-            Listener.ServiceName = "Groove Coaster Controller";
+            Listener.ServiceName = "Bluetooth2Key";
             Listener.Start();
             Console.WriteLine("Starting Bluetooth listener!");
             Task.Run(() => ListenerAsync(Listener));
@@ -72,8 +72,10 @@ namespace GrooveCoasterController
                     switch (r)
                     {
                         case 3:
-                            InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_5);
-                            InputSimulator.Keyboard.KeyUp(VirtualKeyCode.VK_5);
+                            InputSimulator.Keyboard.KeyDown(VirtualKeyCode.VK_S);
+                            break;
+                        case 4:
+                            InputSimulator.Keyboard.KeyUp(VirtualKeyCode.VK_S);
                             break;
                         case 5:
                             InputSimulator.Keyboard.KeyDown(VirtualKeyCode.RETURN);
