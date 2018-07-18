@@ -9,9 +9,9 @@ Bugs/suggestions/questions : [@5argondesu](https://twitter.com/5argondesu) (Or y
 ## How to use
 
 1. Enable Bluetooth on your PC and your Android device.
-2. Run the server .exe which you can get at http://5argon.info/gccon. It will crash if you did not turn on Bluetooth on the PC.
+2. Run the server .exe which you can get at http://5argon.info/gccon. It will crash if you did not turn on Bluetooth on the PC. Or you could clone this project and run debug mode with Visual Studio Code on the top folder.
 3. Pair your phone to the PC manually via Bluetooth. Make sure your phone only pair to one Bluetooth device that is the PC, otherwise it might crash
-4. Download Groove Coaster Controller from Google Play store which you can also find the link at http://5argon.info/gccon and open the app. You must enable Bluetooth on the phone and have paired to the PC before opening the app otherwise it will crash.
+4. Download Groove Coaster Controller from Google Play store which you can also find the link at http://5argon.info/gccon and open the app. You must enable Bluetooth on the phone and have paired to the PC before opening the app otherwise it will crash. (Currently I have not submit the app yet so maybe you could clone this and use Android Studio to build the APK to your device? Or just go to http://5argon.info/gccon and get the .APK to install manually using `adb install -r gccon.apk`.
 5. When you do action on the screen at this moment notice that it will press escape/pause/cancel while using GCCA. Please do not charge the phone while using as it will introduce more latency via static charge. (It is the case of all mobile music games in general)
 
 ### How to navigate the menu/song selection
@@ -55,6 +55,10 @@ View [the official layout documentation](https://store.steampowered.com/manual/7
 - (-) Increased latency. About -2.5/60 ~ -3.5/60 sec more in the calibration option from what you played on the keyboard. More compensation makes ad-lib notes annoying since it is key sounded and cannot be turned off.
 - (-) You might miss left side for the right side as you slide around because there is no physical separation between the areas. However the code correctly handle the case when you push at the left side and drag to the right, it will not activate the right booster and continues to drag the left booster.
 - (-) Scratch note must be done in a circular motion as returning to the center deactivate the note (the real arcade booster can do left-right for scratches)
+
+## About latency in general
+
+Also this game seems to has serious latency problem by default, [read my review](https://steamcommunity.com/id/5argon/recommended/744060). The "game" that has less latency I mentioned in the review for example, like O2Jam and Lunatic Rave 2/Beatoraja. I wish dev could do better than this.
 
 # For contributors
 
