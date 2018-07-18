@@ -1,5 +1,10 @@
 # Groove Coaster Controller (Android)
 
+![preview](preview.jpg)
+![preview2](preview2.gif)
+
+Watch YouTube demo [No Way Out - ARM (IOSYS)](https://www.youtube.com/watch?v=I9IRLKpE7_A)
+
 Experimental app to use your Android device as a wireless controller for playing [Groove Coaster for Steam](https://store.steampowered.com/app/744060/Groove_Coaster/)
 
 Pair Bluetooth to your PC that is running the receiver server and Bluetooth message from Android will trigger key presses on your PC. (Personally I think keyboard is still better scoring-wise.)
@@ -12,7 +17,7 @@ Bugs/suggestions/questions : [@5argondesu](https://twitter.com/5argondesu) (Or y
 2. Run the server .exe which you can get at http://5argon.info/gccon. It will crash if you did not turn on Bluetooth on the PC. Or you could clone this project and run debug mode with Visual Studio Code on the top folder.
 3. Pair your phone to the PC manually via Bluetooth. Make sure your phone only pair to one Bluetooth device that is the PC, otherwise it might crash
 4. Download Groove Coaster Controller from Google Play store which you can also find the link at http://5argon.info/gccon and open the app. You must enable Bluetooth on the phone and have paired to the PC before opening the app otherwise it will crash. (Currently I have not submit the app yet so maybe you could clone this and use Android Studio to build the APK to your device? Or just go to http://5argon.info/gccon and get the .APK to install manually using `adb install -r gccon.apk`.
-5. When you do action on the screen at this moment notice that it will press escape/pause/cancel while using GCCA. Please do not charge the phone while using as it will introduce more latency via static charge. (It is the case of all mobile music games in general)
+5. When you touch/slide on the screen Android will send Bluetooth message to your PC and the server simulate key up-down. You can test with Note Pad. Please do not charge the phone while using as it will introduce more latency via static charge. (It is the case of all mobile music games in general)
 
 ### How to navigate the menu/song selection
 
@@ -115,6 +120,9 @@ For those who wants to fix this bug : it only fails to release when playing both
 
 I am using `View.SYSTE_UI_FLAG_IMMERSIVE_STICKY` to auto-hide status bar and make you have to slide twice to show them up. But sometimes they show up and never hide again?
 
+### Bug : Consecutive slide/dual slide is very hard to activate
+
+I don't know if this is an issue with steam controller or not, but I feel like I have to slide early to register when it has 2 arrows.
 
 ### Put better images that more resemble the real controller than stock Android UI I am using.
 
