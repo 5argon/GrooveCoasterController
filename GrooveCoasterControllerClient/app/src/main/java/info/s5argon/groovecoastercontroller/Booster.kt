@@ -1,9 +1,6 @@
 package info.s5argon.groovecoastercontroller
 
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class Booster(private val rightBooster: Boolean) {
 
@@ -11,9 +8,9 @@ class Booster(private val rightBooster: Boolean) {
     private var pressed: Boolean = false
 
     companion object Constants {
-        const val edgeDistance: Float = 370f
-        const val slideActivationDistance: Float = 140f
-        private const val straightAngleDegree: Float = 15f
+        const val edgeDistance: Float = 300f
+        const val slideActivationDistance: Float = 60f
+        private const val straightAngleDegree: Float = 45f
         const val halfStraightAngle: Float = straightAngleDegree / 2f
     }
 
@@ -22,6 +19,7 @@ class Booster(private val rightBooster: Boolean) {
         private var y: Float = 0f
         val magnitude get() = sqrt((x * x) + (y * y))
         fun moveAndClampToMagnitude(moveX : Float, moveY: Float, newMagnitude: Float) {
+            println("Move by $moveX $moveY")
             x += moveX
             y += moveY
             val currentMagnitude = magnitude
@@ -65,13 +63,13 @@ class Booster(private val rightBooster: Boolean) {
                 val xUnit = x/mag
                 val yUnit = y/mag
 
-                val right = yUnit > sin(halfStraightAngle.radian)
-                val left = yUnit < sin((-halfStraightAngle).radian)
+                val left = xUnit < cos((90 + halfStraightAngle).radian)
+                val right = xUnit > cos((90 - halfStraightAngle).radian)
 
-                val up = xUnit > cos((90 - halfStraightAngle).radian)
-                val down = xUnit < cos((90 + halfStraightAngle).radian)
+                val down = yUnit > sin(halfStraightAngle.radian)
+                val up = yUnit < sin((-halfStraightAngle).radian)
 
-                println("Active Direction ($xUnit, $yUnit)")
+                println("Active Direction ($xUnit, $yUnit) Deg : ${atan(yUnit/xUnit) * 180 / PI}")
 
                 return ActiveDirections(left, down, up, right)
             }
@@ -109,19 +107,19 @@ class Booster(private val rightBooster: Boolean) {
      * e.g. Previous frame 1 -> this frame 0 = we call "up" for that button.
      * Booster index : 0 = Left, 1 = Right
      */
-    fun generateByteMessage(): Byte {
+    fun generateByteMessage(): Int {
         val direction = boosterPosition.activeDirections
         val byteMessage =
                 (
-                        0 shl 7 or
-                        0 shl 6 or
-                        direction.left.asBit shl 5 or
-                        direction.down.asBit shl 4 or
-                        direction.up.asBit shl 3 or
-                        direction.right.asBit shl 2 or
-                        pressed.asBit shl 1 or
-                        rightBooster.asBit
+        (0 shl 7) or
+        (0 shl 6) or
+        (direction.left.asBit shl 5) or
+        (direction.down.asBit shl 4) or
+        (direction.up.asBit shl 3 )or
+        (direction.right.asBit shl 2) or
+        (pressed.asBit shl 1) or
+        (rightBooster.asBit)
                 )
-        return byteMessage.toByte()
+        return byteMessage
     }
 }

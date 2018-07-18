@@ -8,36 +8,44 @@ import android.view.View
 import android.content.Context
 import android.content.Intent
 import android.graphics.Point
+import android.widget.FrameLayout
 import java.util.*
 
-/*
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
-*/
 
 class MainActivity : AppCompatActivity() {
+
+    private var bluetoothAdapter : BluetoothAdapter? = null
+    private var firstBonded : BluetoothDevice? = null
+    private var socket : BluetoothSocket? = null
+    private var pointTracker : GroovePointTracker? = GroovePointTracker(this)
+
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         hideClutters()
+        val touchReceiver = findViewById<FrameLayout>(R.id.touchReceiver)
+
+        touchReceiver.setOnTouchListener { v: View ,m : MotionEvent->
+            val size = Point()
+            windowManager.defaultDisplay.getSize(size)
+            pointTracker?.processMotionEvent(m, socket, size.x)
+            true
+        }
+
         getBluetooth()
 
-        /*
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager?.registerListener(mSensorListener, mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
         mAccel = 0.00f
         mAccelCurrent = SensorManager.GRAVITY_EARTH
         mAccelLast = SensorManager.GRAVITY_EARTH
-        */
     }
 
-    private var bluetoothAdapter : BluetoothAdapter? = null
-    private var firstBonded : BluetoothDevice? = null
-    private var socket : BluetoothSocket? = null
-    private var pointTracker : GroovePointTracker? = null
 
     private fun getBluetooth() {
         println("Getting Bluetooth")
@@ -54,15 +62,7 @@ class MainActivity : AppCompatActivity() {
         println("Connected name ${firstBonded?.name}, getting RFCOMM")
         socket = firstBonded?.createRfcommSocketToServiceRecord(UUID.fromString("0abfa6c2-384c-4844-8e9d-7fcc862b3a7d"))
         socket?.connect()
-        pointTracker = GroovePointTracker()
         println("Connected! Probably!")
-    }
-
-    override fun onTouchEvent(event: MotionEvent?): Boolean {
-        val size = Point()
-        windowManager.defaultDisplay.getSize(size)
-        pointTracker?.processMotionEvent(event,socket, size.y)
-        return super.onTouchEvent(event)
     }
 
     private fun hideClutters(){
@@ -72,9 +72,8 @@ class MainActivity : AppCompatActivity() {
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
     }
 
-    // Removed a joke shake function lol I added it so that it is stupid enough for Stupid Hackathon Thailand 2
+    // a joke shake function lol I added it so that it is stupid enough for Stupid Hackathon Thailand 2
 
-    /*
     private var mSensorManager: SensorManager? = null
     private var mAccel: Float = 0.toFloat()
     private var mAccelCurrent: Float = 0.toFloat()
@@ -89,9 +88,9 @@ class MainActivity : AppCompatActivity() {
             mAccelCurrent = Math.sqrt((x * x + y * y + z * z).toDouble()).toFloat()
             val delta = mAccelCurrent - mAccelLast
             mAccel = (mAccel percentage 90) + delta // perform low-cut filter
-            if(mAccel > 20)
+            if(mAccel > 28) //Adjust sensitivity here!
             {
-                socket?.outputStream?.write(5)
+                //socket?.outputStream?.write(1 shl 7)
             }
         }
 
@@ -109,5 +108,4 @@ class MainActivity : AppCompatActivity() {
         mSensorManager!!.unregisterListener(mSensorListener)
         super.onPause()
     }
-    */
 }

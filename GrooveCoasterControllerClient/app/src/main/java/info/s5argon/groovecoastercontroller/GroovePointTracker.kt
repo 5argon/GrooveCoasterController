@@ -2,12 +2,13 @@ package info.s5argon.groovecoastercontroller
 
 import android.bluetooth.BluetoothSocket
 import android.view.MotionEvent
+import android.widget.ImageView
 
 /**
  * Decide and gives motion to the correct booster based on captured touch screen movement.
  * Also push data to Bluetooth stream
  */
-class GroovePointTracker {
+class GroovePointTracker(private val mainActivity: MainActivity)  {
 
     private val boosterL: Booster = Booster(false)
     private val boosterR: Booster = Booster(true)
@@ -49,7 +50,6 @@ class GroovePointTracker {
 
     fun processMotionEvent(event: MotionEvent?, socket: BluetoothSocket?, screenWidth: Int) {
         if(event == null) return
-        if(socket == null) return
 
         println(event)
 
@@ -74,7 +74,7 @@ class GroovePointTracker {
             //actionIndex is always 0 when the action is not the _POINTER_ one (when we have only 1 point)
             //That means it is not representing the real active pointer ID as it might be 1, 2, etc..
             val pointerIdOfAction = if(pointerCount > 1)  event.actionIndex else pointerId
-            val leftSide = y < (screenWidth / 2f)
+            val leftSide = x < (screenWidth / 2f)
 
             val pointTrackerOfCurrentSide = if(leftSide) leftTracking else rightTracking
             val boosterOfCurrentSide = if(leftSide) boosterL else boosterR
@@ -91,6 +91,10 @@ class GroovePointTracker {
                 println("Bound L$leftSide to $pointerIdOfAction > ${leftTracking.boundedTouchId} ${leftTracking.isBounded} ${rightTracking.boundedTouchId} ${rightTracking.isBounded}")
                 pointTrackerOfCurrentSide.bound(pointerIdOfAction, x,y)
                 boosterOfCurrentSide.down()
+            }
+            else
+            {
+                println("Not bound! $downAction $actionOccurOnThisPointer ${pointTrackerOfCurrentSide.isBounded} | ${leftTracking.isBounded} ${rightTracking.isBounded} | ${leftSide}")
             }
 
             //Up action will search for registered side regardless of where you up the touch
@@ -124,13 +128,38 @@ class GroovePointTracker {
 
             println("Pointer $pointerId : $x $y $actionOccurOnThisPointer $pointerIdOfAction | $downAction $upAction $moveAction")
         }
-        println("BoosterL $boosterL")
-        println("BoosterR $boosterR")
-        println("-----")
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            socket.outputStream?.write(3)
-        } else if (event.action == MotionEvent.ACTION_UP) {
-            socket.outputStream?.write(4)
-        }
+        val byteL = boosterL.generateByteMessage()
+        val byteR = boosterR.generateByteMessage()
+        debugBooster(byteL, byteR)
+        println("BoosterL $boosterL ${byteL}")
+        println("BoosterR $boosterR ${byteR}")
+        if(socket == null) return
+        socket.outputStream?.write(byteL)
+        socket.outputStream?.write(byteR)
+    }
+
+    fun debugBooster(byteL : Int, byteR : Int)
+    {
+        val activateL = mainActivity.findViewById<ImageView>(R.id.leftBoosterActivate)
+        val activateR = mainActivity.findViewById<ImageView>(R.id.rightBoosterActivate)
+        activateL.alpha = if(byteL and (1 shl 1) != 0) 0.5f else 0f
+        activateR.alpha = if(byteR and (1 shl 1) != 0) 0.5f else 0f
+
+        val paddingConst = 40
+        val topL = mainActivity.findViewById<ImageView>(R.id.leftBoosterTop)
+        val padLLeft = if(byteL and (1 shl 5) != 0) paddingConst else 0
+        val padLDown = if(byteL and (1 shl 4) != 0) paddingConst else 0
+        val padLUp = if(byteL and (1 shl 3) != 0) paddingConst else 0
+        val padLRight = if(byteL and (1 shl 2) != 0) paddingConst else 0
+        //Set in reverse direction so it push the image to the other directon
+        topL.setPadding(padLRight,padLDown, padLLeft, padLUp)
+
+        val topR = mainActivity.findViewById<ImageView>(R.id.rightBoosterTop)
+        val padRLeft = if(byteR and (1 shl 5) != 0) paddingConst else 0
+        val padRDown = if(byteR and (1 shl 4) != 0) paddingConst else 0
+        val padRUp = if(byteR and (1 shl 3) != 0) paddingConst else 0
+        val padRRight = if(byteR and (1 shl 2) != 0) paddingConst else 0
+        //Set in reverse direction so it push the image to the other directon
+        topR.setPadding(padRRight,padRDown, padRLeft, padRUp)
     }
 }
