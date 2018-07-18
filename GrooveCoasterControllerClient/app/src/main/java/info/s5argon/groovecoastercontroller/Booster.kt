@@ -8,8 +8,8 @@ class Booster(private val rightBooster: Boolean) {
     private var pressed: Boolean = false
 
     companion object Constants {
-        const val edgeDistance: Float = 300f
-        const val slideActivationDistance: Float = 60f
+        const val edgeDistance: Float = 160f
+        const val slideActivationDistance: Float = 30f
         private const val straightAngleDegree: Float = 45f
         const val halfStraightAngle: Float = straightAngleDegree / 2f
     }
@@ -19,7 +19,6 @@ class Booster(private val rightBooster: Boolean) {
         private var y: Float = 0f
         val magnitude get() = sqrt((x * x) + (y * y))
         fun moveAndClampToMagnitude(moveX : Float, moveY: Float, newMagnitude: Float) {
-            println("Move by $moveX $moveY")
             x += moveX
             y += moveY
             val currentMagnitude = magnitude
@@ -69,7 +68,7 @@ class Booster(private val rightBooster: Boolean) {
                 val down = yUnit > sin(halfStraightAngle.radian)
                 val up = yUnit < sin((-halfStraightAngle).radian)
 
-                println("Active Direction ($xUnit, $yUnit) Deg : ${atan(yUnit/xUnit) * 180 / PI}")
+                //println("Active Direction ($xUnit, $yUnit) Deg : ${atan(yUnit/xUnit) * 180 / PI}")
 
                 return ActiveDirections(left, down, up, right)
             }

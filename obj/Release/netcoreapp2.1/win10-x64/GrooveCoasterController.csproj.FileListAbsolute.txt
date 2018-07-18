@@ -1,0 +1,14 @@
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\hostpolicy.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\hostfxr.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.exe
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.deps.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.runtimeconfig.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.runtimeconfig.dev.json
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\bin\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.pdb
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.csprojAssemblyReference.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.csproj.CoreCompileInputs.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.AssemblyInfoInputs.cache
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.AssemblyInfo.cs
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.dll
+C:\Users\5argon-Windows\Documents\GrooveCoasterController\obj\Release\netcoreapp2.1\win10-x64\GrooveCoasterController.pdb

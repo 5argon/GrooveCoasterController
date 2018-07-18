@@ -1,8 +1,8 @@
 # Groove Coaster Controller (Android)
 
-Use your Android device as a wireless controller for playing [Groove Coaster for Steam](https://store.steampowered.com/app/744060/Groove_Coaster/)
+Experimental app to use your Android device as a wireless controller for playing [Groove Coaster for Steam](https://store.steampowered.com/app/744060/Groove_Coaster/)
 
-Pair Bluetooth to your PC that is running the receiver server and Bluetooth message from Android will trigger key presses on your PC.
+Pair Bluetooth to your PC that is running the receiver server and Bluetooth message from Android will trigger key presses on your PC. (Personally I think keyboard is still better scoring-wise.)
 
 Bugs/suggestions/questions : [@5argondesu](https://twitter.com/5argondesu) (Or you can fix it yourself and open a pull request!)
 
@@ -12,7 +12,7 @@ Bugs/suggestions/questions : [@5argondesu](https://twitter.com/5argondesu) (Or y
 2. Run the server .exe which you can get at http://5argon.info/gccon. It will crash if you did not turn on Bluetooth on the PC.
 3. Pair your phone to the PC manually via Bluetooth. Make sure your phone only pair to one Bluetooth device that is the PC, otherwise it might crash
 4. Download Groove Coaster Controller from Google Play store which you can also find the link at http://5argon.info/gccon and open the app. You must enable Bluetooth on the phone and have paired to the PC before opening the app otherwise it will crash.
-5. When you do action on the screen at this moment notice that it will press escape/pause/cancel while using GCCA
+5. When you do action on the screen at this moment notice that it will press escape/pause/cancel while using GCCA. Please do not charge the phone while using as it will introduce more latency via static charge. (It is the case of all mobile music games in general)
 
 ### How to navigate the menu/song selection
 
@@ -52,13 +52,19 @@ View [the official layout documentation](https://store.steampowered.com/manual/7
 - (+) Pressing and sliding is on the same surface
 - (+) Play in either holding position like Steam Controller or flat layout position like arcade. (But you might have to tape the phone)
 - (-) The key is not tactile
-- (-) A bit of increased latency
-- (-) You might miss left side for the right side as you slide around because there is no physical separation between the areas
+- (-) Increased latency. About -2.5/60 ~ -3.5/60 sec more in the calibration option from what you played on the keyboard. More compensation makes ad-lib notes annoying since it is key sounded and cannot be turned off.
+- (-) You might miss left side for the right side as you slide around because there is no physical separation between the areas. However the code correctly handle the case when you push at the left side and drag to the right, it will not activate the right booster and continues to drag the left booster.
 - (-) Scratch note must be done in a circular motion as returning to the center deactivate the note (the real arcade booster can do left-right for scratches)
 
-Latency is acceptable compared to keyboard's USB given that the Bluetooth signal is stable. Try it and decide by yourself whether you can feel any difference from cable connection or not.
-
 # For contributors
+
+## How to build .exe with .NET Core
+
+```
+dotnet publish -c Release -r win10-x64
+```
+
+This is a self-contained build and so it will contains all of .NET Core (zipped about ~30 MB?)
 
 ## Architecture overview 
 
@@ -81,19 +87,30 @@ Android will send 1 byte (8 bits) for each booster every time there is any actio
 This is the data layout
 
 ```
-[Escape] [n/a] [Left] [Down] - [Up] [Right] [Pressed] [BoosterIndex]
+[Escape] [Back] [Left] [Down] - [Up] [Right] [Pressed] [BoosterIndex]
 ```
 
 - **Left Down Up Right** : 1 means that direction is currently active. Diagonal slide is represented by multiple of these direction bit being 1 at the same time.
 - **Pressed** : 1 means the button is currently down. You cannot have the directional bit on without this as 1 as you are required to touch the screen. (But in the real Groove Coaster arcade you can push the booster without touching the button)
 - **BoosterIndex** : 0 means the left booster, 1 for the right booster.
-- **Escape** : Reserved for pressing down or up the escape key. When escape is sent from the Android it will not be in pair and will be just a single byte of 1000 0000 via shaking the phone, which means it will go to left booster's variable and never to the right. (First bit is 0) Currently there is no way to send escape key from Android yet but the server can already accept it.
+- **Escape/Back** : Reserved for pressing down or up the escape/back key. When escape is sent from the Android it will not be in pair and will be just a single byte of 1000 0000 via shaking the phone, which means it will go to left booster's variable and never to the right. (First bit is 0) Currently there is no way to send escape key from Android yet but the server can already accept it.
 
 It is up to the server to remember the previous byte and compare with the current one to decide which key to do "key up" or "key down" or do nothing by differentiating each bit.
 
 ## Possible improvements
 
 Here are many things that is currently not so good :
+
+### Bug : You can use only one finger per side
+
+If you play with your palm / several fingers per side like in the arcade the button releasing code will get confused and will fail to release the button. So for now please use only your index fingers or thumbs on holding position.
+
+For those who wants to fix this bug : it only fails to release when playing both side actively with multiple fingers. For one side the code correctly use only the first finger touched and all other will be ignored.
+
+### Bug : The status bar and soft key sometimes shows up and not hiding ever again
+
+I am using `View.SYSTE_UI_FLAG_IMMERSIVE_STICKY` to auto-hide status bar and make you have to slide twice to show them up. But sometimes they show up and never hide again?
+
 
 ### Put better images that more resemble the real controller than stock Android UI I am using.
 
@@ -154,7 +171,7 @@ But the keys mapping is currently hard coded to GC for Steam's default keyboard 
 
 Find some way to use USB cable instead of Bluetooth. The reason that I didn't go that way despite the possible latency improvement is that programming serial port could be HELL (challenger wanted!)
 
-### Some way to press the escape key
+### Some way to press the escape/back key
 
 In `MainActivity.kt` you will see a commented out `socket?.outputStream?.write(1 shl 7)` which will send `1000 0000` on shaking the phone. But the key would be stuck down forever until any action to the left booster that cause `0xxx xxx` to pull it up. I feel like it is not good enough. The solution is we could implement a timer after that `1000 0000` to send the next `0000 0000` to release the key.
 

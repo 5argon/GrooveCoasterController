@@ -51,7 +51,7 @@ class GroovePointTracker(private val mainActivity: MainActivity)  {
     fun processMotionEvent(event: MotionEvent?, socket: BluetoothSocket?, screenWidth: Int) {
         if(event == null) return
 
-        println(event)
+        //println(event)
 
         val pointerCount = event.pointerCount
         val action = event.actionMasked
@@ -88,13 +88,13 @@ class GroovePointTracker(private val mainActivity: MainActivity)  {
             //Down action will be registered on the touched side, if not already touching
             if(downAction && actionOccurOnThisPointer && !pointTrackerOfCurrentSide.isBounded)
             {
-                println("Bound L$leftSide to $pointerIdOfAction > ${leftTracking.boundedTouchId} ${leftTracking.isBounded} ${rightTracking.boundedTouchId} ${rightTracking.isBounded}")
+                //println("Bound L$leftSide to $pointerIdOfAction > ${leftTracking.boundedTouchId} ${leftTracking.isBounded} ${rightTracking.boundedTouchId} ${rightTracking.isBounded}")
                 pointTrackerOfCurrentSide.bound(pointerIdOfAction, x,y)
                 boosterOfCurrentSide.down()
             }
             else
             {
-                println("Not bound! $downAction $actionOccurOnThisPointer ${pointTrackerOfCurrentSide.isBounded} | ${leftTracking.isBounded} ${rightTracking.isBounded} | ${leftSide}")
+                //println("Not bound! $downAction $actionOccurOnThisPointer ${pointTrackerOfCurrentSide.isBounded} | ${leftTracking.isBounded} ${rightTracking.isBounded} | ${leftSide}")
             }
 
             //Up action will search for registered side regardless of where you up the touch
@@ -102,13 +102,13 @@ class GroovePointTracker(private val mainActivity: MainActivity)  {
             {
                 if(leftTracking.boundedTouchId == pointerIdOfAction)
                 {
-                    println("Upping LEFT side because ${leftTracking.boundedTouchId} ${rightTracking.boundedTouchId} $pointerIdOfAction")
+                    //println("Upping LEFT side because ${leftTracking.boundedTouchId} ${rightTracking.boundedTouchId} $pointerIdOfAction")
                     leftTracking.reset()
                     boosterL.up()
                 }
                 else if(rightTracking.boundedTouchId == pointerIdOfAction)
                 {
-                    println("Upping RIGHT side because ${leftTracking.boundedTouchId} ${rightTracking.boundedTouchId} $pointerIdOfAction")
+                    //println("Upping RIGHT side because ${leftTracking.boundedTouchId} ${rightTracking.boundedTouchId} $pointerIdOfAction")
                     rightTracking.reset()
                     boosterR.up()
                 }
@@ -126,13 +126,13 @@ class GroovePointTracker(private val mainActivity: MainActivity)  {
                 boosterR.move(diff.first, diff.second)
             }
 
-            println("Pointer $pointerId : $x $y $actionOccurOnThisPointer $pointerIdOfAction | $downAction $upAction $moveAction")
+            //println("Pointer $pointerId : $x $y $actionOccurOnThisPointer $pointerIdOfAction | $downAction $upAction $moveAction")
         }
         val byteL = boosterL.generateByteMessage()
         val byteR = boosterR.generateByteMessage()
         debugBooster(byteL, byteR)
-        println("BoosterL $boosterL ${byteL}")
-        println("BoosterR $boosterR ${byteR}")
+        //println("BoosterL $boosterL ${byteL}")
+        //println("BoosterR $boosterR ${byteR}")
         if(socket == null) return
         socket.outputStream?.write(byteL)
         socket.outputStream?.write(byteR)

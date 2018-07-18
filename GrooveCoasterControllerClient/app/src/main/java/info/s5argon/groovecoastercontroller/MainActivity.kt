@@ -6,15 +6,19 @@ import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Point
+import android.support.v7.app.AlertDialog
 import android.widget.FrameLayout
 import java.util.*
 
+/*
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+*/
 
 class MainActivity : AppCompatActivity() {
 
@@ -25,25 +29,47 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         hideClutters()
         val touchReceiver = findViewById<FrameLayout>(R.id.touchReceiver)
 
-        touchReceiver.setOnTouchListener { v: View ,m : MotionEvent->
-            val size = Point()
-            windowManager.defaultDisplay.getSize(size)
-            pointTracker?.processMotionEvent(m, socket, size.x)
-            true
+
+        val builder = AlertDialog.Builder(this)
+        val welcomeMessage =
+                "For more information see 詳しくは : http://5argon.info/gccon \n" +
+                "\n" +
+                "Before pressing the OK button below you must : \n" +
+                "\n" +
+                "1. Enable Bluetooth on your PC and your Android device. \n" +
+                "2. Run the server .exe which you can get at http://5argon.info/gccon. It will crash if you did not turn on Bluetooth on the PC. \n" +
+                "3. Pair your phone to the PC manually via Bluetooth. Make sure your phone only pair to one Bluetooth device that is the PC, otherwise it might crash \n"
+                "\n" +
+                "Contributions welcomed at https://github.com/5argon/GrooveCoasterController !"
+
+        builder.setMessage(welcomeMessage).setTitle("Groove Coaster Controller")
+        builder.setNeutralButton("OK")
+        { d : DialogInterface, i : Int ->
+            touchReceiver.setOnTouchListener { v: View ,m : MotionEvent->
+                val size = Point()
+                windowManager.defaultDisplay.getSize(size)
+                pointTracker?.processMotionEvent(m, socket, size.x)
+                true
+            }
+            getBluetooth()
         }
+        builder.setCancelable(false)
+        val dialog = builder.create()
+        dialog.show()
 
-        getBluetooth()
-
+        /*
         mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         mSensorManager?.registerListener(mSensorListener, mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL)
         mAccel = 0.00f
         mAccelCurrent = SensorManager.GRAVITY_EARTH
         mAccelLast = SensorManager.GRAVITY_EARTH
+        */
     }
 
 
@@ -74,6 +100,7 @@ class MainActivity : AppCompatActivity() {
 
     // a joke shake function lol I added it so that it is stupid enough for Stupid Hackathon Thailand 2
 
+    /*
     private var mSensorManager: SensorManager? = null
     private var mAccel: Float = 0.toFloat()
     private var mAccelCurrent: Float = 0.toFloat()
@@ -90,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             mAccel = (mAccel percentage 90) + delta // perform low-cut filter
             if(mAccel > 28) //Adjust sensitivity here!
             {
-                //socket?.outputStream?.write(1 shl 7)
+                socket?.outputStream?.write(1 shl 7)
             }
         }
 
@@ -108,4 +135,5 @@ class MainActivity : AppCompatActivity() {
         mSensorManager!!.unregisterListener(mSensorListener)
         super.onPause()
     }
+    */
 }

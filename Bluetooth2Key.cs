@@ -25,24 +25,26 @@ namespace GrooveCoasterController
                 Console.WriteLine($"Ouch! Did you turn on the Bluetooth?");
                 throw;
             }
-            StartBluetoothRFCOMM();
         }
 
-        private void StartBluetoothRFCOMM()
+        public async Task StartBluetoothRFCOMM()
         {
-            Listener.ServiceName = "Bluetooth2Key";
+            Listener.ServiceName = "Groove Coaster Controller Server";
             Listener.Start();
             Console.WriteLine("Starting Bluetooth listener!");
-            Task.Run(() => ListenerAsync(Listener));
+            while(true)
+            {
+                await Task.Run(() => ListenerAsync(Listener));
+            }
         }
 
         private void ListenerAsync(BluetoothListener listener)
         {
             Console.WriteLine($"Waiting for connection...");
             BluetoothClient client = listener.AcceptBluetoothClient();
-            Console.WriteLine($"Connected from : {client.RemoteEndPoint.Address} {client.RemoteMachineName}");
+            Console.WriteLine($"Connected from : {client.RemoteMachineName} (Address : {client.RemoteEndPoint.Address})");
             var peer = client.GetStream();
-            Console.WriteLine("Reading...");
+            Console.WriteLine("Reading input...");
             ReadMessagesToEnd(peer);
         }
 
@@ -54,6 +56,7 @@ namespace GrooveCoasterController
             public abstract VirtualKeyCode right { get; }
             public abstract VirtualKeyCode press { get; }
             public abstract VirtualKeyCode escape { get; }
+            public abstract VirtualKeyCode back { get; }
         }
 
         private class LeftConfig : SideConfig
@@ -64,6 +67,7 @@ namespace GrooveCoasterController
             public override VirtualKeyCode right => VirtualKeyCode.VK_D;
             public override VirtualKeyCode press => VirtualKeyCode.SPACE;
             public override VirtualKeyCode escape => VirtualKeyCode.ESCAPE;
+            public override VirtualKeyCode back => VirtualKeyCode.DELETE;
         }
 
         private class RightConfig : SideConfig
@@ -74,6 +78,7 @@ namespace GrooveCoasterController
             public override VirtualKeyCode right => VirtualKeyCode.NUMPAD6;
             public override VirtualKeyCode press => VirtualKeyCode.NUMPAD0;
             public override VirtualKeyCode escape => VirtualKeyCode.ESCAPE;
+            public override VirtualKeyCode back => VirtualKeyCode.DELETE;
         }
 
         private static readonly LeftConfig leftConfig = new LeftConfig();
@@ -158,6 +163,10 @@ namespace GrooveCoasterController
                     {
                         DownUpKey(sc.left, left);
                     }
+                    if (BitDiff(previous, r, 6, out int back))
+                    {
+                        DownUpKey(sc.escape, back);
+                    }
                     if (BitDiff(previous, r, 7, out int escape))
                     {
                         DownUpKey(sc.escape, escape);
@@ -172,7 +181,7 @@ namespace GrooveCoasterController
                         leftPrevious = r;
                     }
                 }
-                Console.WriteLine($"Message : {Convert.ToString(r, 2).PadLeft(32)}");
+                //Console.WriteLine($"Message : {Convert.ToString(r, 2).PadLeft(32)}");
             }
             ConnectionCleanup();
         }
